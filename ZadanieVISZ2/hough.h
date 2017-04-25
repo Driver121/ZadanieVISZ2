@@ -1,4 +1,3 @@
-#pragma once
 #ifndef HOUGH_H_
 #define HOUGH_H_
 

@@ -12,14 +12,15 @@
 
 using namespace cv;
 
-int  threshold = 5;
+int  threshold = 2;
 
-std::string img_path = "../Data/lines2.jpg";
+std::string img_path = "../Data/house.jpg";
 
 
 const char* CW_IMG_ORIGINAL = "Result";
 const char* CW_IMG_EDGE = "Canny Edge Detection";
 const char* CW_ACCUMULATOR = "Accumulator";
+const char* CW_IMG_BLUR = "Blur";
 
 void doTransform(std::string, int threshold);
 
@@ -36,27 +37,38 @@ void usage(char * s)
 }
 
 
+// V funkcii main si vytvorÌme okn· do ktor˝ch zobrazÌme v˝sledky ,
+// nastavÌme ich velkosù a ich polohu na obrazovke.
+// V maine eöte zavol·me funkciu doTransform ktor· vykon· houghov˙ 
+// tranosform·ciu a zobrazÌ v˝sledky do okien ktorÈ sme si vytvorili 
 int main(int argc, char** argv) {
 
 
 	cv::namedWindow(CW_IMG_ORIGINAL, cv::WINDOW_AUTOSIZE);
+	cv::namedWindow(CW_IMG_BLUR, cv::WINDOW_AUTOSIZE);
 	cv::namedWindow(CW_IMG_EDGE, cv::WINDOW_AUTOSIZE);
 	cv::namedWindow(CW_ACCUMULATOR, cv::WINDOW_AUTOSIZE);
 
 	cvMoveWindow(CW_IMG_ORIGINAL, 10, 10);
 	cvMoveWindow(CW_IMG_EDGE, 680, 10);
 	cvMoveWindow(CW_ACCUMULATOR, 680, 10);
+	cvMoveWindow(CW_IMG_BLUR, 20, 10);
 
-	doTransform(img_path, 0); // tu m· byù treshhold ale vyhadzuje mi to chybu Ù
+	doTransform(img_path, 0); // tu zad·me treshold 
 
 
 	return 0;
 }
 
 
-
+// V tejto funkcii urobÌme naËit·nie obr·zka, potom tento obr·zok prejdeme pomocou filtrov a to filtrom 
+//rozmazania , potom filtrom na dekeciu hr·n ktor˝ tam obr·zok upravÌ aj do Ëierno bielej
+// potom poöleme takÈto spracovan˝ obraz do naöej funkcie v ktorÈj detekujeme Ëiary tam si
+//naplnÌme akumul·tor a potom v tomto akumul·tore hlad·me najlepöie moûnosti 
+// Nasledne najlepöie v˝sledky zobrazÌme 
 void doTransform(std::string file_path, int threshold)
 {
+
 	cv::Mat img_edge;
 	cv::Mat img_blur;
 
@@ -67,7 +79,7 @@ void doTransform(std::string file_path, int threshold)
 	int w = img_edge.cols;
 	int h = img_edge.rows;
 
-	//Transform
+	//Transfrom·cia 
 	zad::Hough hough;
 	hough.Transform(img_edge.data, w, h);
 
@@ -80,17 +92,17 @@ void doTransform(std::string file_path, int threshold)
 	{
 		cv::Mat img_res = img_ori.clone();
 
-		//Search the accumulator
+		//Hlad·m v akumul·tore 
 		std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > lines = hough.GetLines(threshold);
 
-		//Draw the results
+		//VykreslÌme v˝sledky
 		std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > >::iterator it;
 		for (it = lines.begin(); it != lines.end(); it++)
 		{
 			cv::line(img_res, cv::Point(it->first.first, it->first.second), cv::Point(it->second.first, it->second.second), cv::Scalar(0, 0, 255), 2, 8);
 		}
 
-		//Visualize all
+		//ZobrazÌm vöetky 
 		int aw, ah, maxa;
 		aw = ah = maxa = 0;
 		const unsigned int* accu = hough.GetAccu(&aw, &ah);
@@ -112,7 +124,7 @@ void doTransform(std::string file_path, int threshold)
 			img_accu.data[(p * 3) + 2] = 255 - c;
 		}
 
-
+		cv::imshow(CW_IMG_BLUR, img_blur);
 		cv::imshow(CW_IMG_ORIGINAL, img_res);
 		cv::imshow(CW_IMG_EDGE, img_edge);
 		cv::imshow(CW_ACCUMULATOR, img_accu);

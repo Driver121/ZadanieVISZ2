@@ -1,11 +1,4 @@
 ﻿  main.cpp
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\main.cpp(109): warning C4244: 'initializing': conversion from 'double' to 'unsigned char', possible loss of data
-  hough.cpp
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\hough.cpp(32): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\hough.cpp(99): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\hough.cpp(101): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\hough.cpp(107): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\hough.cpp(109): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-  Generating Code...
-  ZadanieVISZ2.vcxproj -> c:\users\peter halasz\documents\visual studio 2015\Projects\ZadanieVISZ2\x64\Debug\ZadanieVISZ2.exe
-  ZadanieVISZ2.vcxproj -> c:\users\peter halasz\documents\visual studio 2015\Projects\ZadanieVISZ2\x64\Debug\ZadanieVISZ2.pdb (Full PDB)
+c:\users\peter halasz\documents\visual studio 2015\projects\zadanievisz2\zadanievisz2\main.cpp(121): warning C4244: 'initializing': conversion from 'double' to 'unsigned char', possible loss of data
+  ZadanieVISZ2.vcxproj -> C:\Users\Peter Halasz\documents\visual studio 2015\Projects\ZadanieVISZ2\x64\Debug\ZadanieVISZ2.exe
+  ZadanieVISZ2.vcxproj -> C:\Users\Peter Halasz\documents\visual studio 2015\Projects\ZadanieVISZ2\x64\Debug\ZadanieVISZ2.pdb (Full PDB)

@@ -1,5 +1,4 @@
 
-
 #include "hough.h"
 #include <cmath>
 #include <iostream>
@@ -27,16 +26,19 @@ namespace zad {
 		_img_w = w;
 		_img_h = h;
 
-		//Create the accu
+		//Vytovríme si akumulátor 
 		double hough_h = ((sqrt(2.0) * (double)(h>w ? h : w)) / 2.0);
 		_accu_h = hough_h * 2.0; // -r -> +r
 		_accu_w = 180;
 
+		// Vytvoríme si akumulátor ktorý bude ma najprv len samé 0 
 		_accu = (unsigned int*)calloc(_accu_h * _accu_w, sizeof(unsigned int));
 
 		double center_x = w / 2;
 		double center_y = h / 2;
 
+		// Prechádzame pole a hladáme body pre priamku.>250 použije lebo hladáme biele body 
+		// Ak najdeme nejaké nejaký bod tak ho uložíme do akumulátora a inkrementujeme tento bod o 1 
 
 		for (int y = 0; y<h; y++)
 		{
@@ -55,61 +57,66 @@ namespace zad {
 
 		return 0;
 	}
+//Tu ziskame už jednotlivé priamky 
 
 	std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > Hough::GetLines(int threshold)
 	{
+		// vektor ktorý obsahuje dvojice (x1,y1) a (x2,y2)
 		std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > lines;
 
+		// Keï je akumulátor prázdny 
 		if (_accu == 0)
 			return lines;
 
+		// Prejdeme akumulátor
 		for (int r = 0; r<_accu_h; r++)
 		{
 			for (int t = 0; t<_accu_w; t++)
 			{
 				if ((int)_accu[(r*_accu_w) + t] >= threshold)
 				{
-					//Is this point a local maxima (9x9)
-					int max = _accu[(r*_accu_w) + t];
-					for (int ly = -4; ly <= 4; ly++)
-					{
-						for (int lx = -4; lx <= 4; lx++)
+					
+						// toto je bod lokalneho maxima
+						int max = _accu[(r*_accu_w) + t];
+						for (int ly = -4; ly <= 4; ly++)
 						{
-							if ((ly + r >= 0 && ly + r<_accu_h) && (lx + t >= 0 && lx + t<_accu_w))
+							for (int lx = -4; lx <= 4; lx++)
 							{
-								if ((int)_accu[((r + ly)*_accu_w) + (t + lx)] > max)
+								if ((ly + r >= 0 && ly + r<_accu_h) && (lx + t >= 0 && lx + t<_accu_w))
 								{
-									max = _accu[((r + ly)*_accu_w) + (t + lx)];
-									ly = lx = 5;
+									if ((int)_accu[((r + ly)*_accu_w) + (t + lx)] > max)
+									{
+										max = _accu[((r + ly)*_accu_w) + (t + lx)];
+										ly = lx = 5;
+									}
 								}
 							}
 						}
-					}
-					if (max >(int)_accu[(r*_accu_w) + t])
-						continue;
+						if (max >(int)_accu[(r*_accu_w) + t])
+							continue;
 
 
-					int x1, y1, x2, y2;
-					x1 = y1 = x2 = y2 = 0;
+						int x1, y1, x2, y2;
+						x1 = y1 = x2 = y2 = 0;
 
-					if (t >= 45 && t <= 135)
-					{
-						//y = (r - x cos(t)) / sin(t)
-						x1 = 0;
-						y1 = ((double)(r - (_accu_h / 2)) - ((x1 - (_img_w / 2)) * cos(t * DEG2RAD))) / sin(t * DEG2RAD) + (_img_h / 2);
-						x2 = _img_w - 0;
-						y2 = ((double)(r - (_accu_h / 2)) - ((x2 - (_img_w / 2)) * cos(t * DEG2RAD))) / sin(t * DEG2RAD) + (_img_h / 2);
-					}
-					else
-					{
-						//x = (r - y sin(t)) / cos(t);
-						y1 = 0;
-						x1 = ((double)(r - (_accu_h / 2)) - ((y1 - (_img_h / 2)) * sin(t * DEG2RAD))) / cos(t * DEG2RAD) + (_img_w / 2);
-						y2 = _img_h - 0;
-						x2 = ((double)(r - (_accu_h / 2)) - ((y2 - (_img_h / 2)) * sin(t * DEG2RAD))) / cos(t * DEG2RAD) + (_img_w / 2);
-					}
+						if (t >= 45 && t <= 135)
+						{
+							//y = (r - x cos(t)) / sin(t)
+							x1 = 0;
+							y1 = ((double)(r - (_accu_h / 2)) - ((x1 - (_img_w / 2)) * cos(t * DEG2RAD))) / sin(t * DEG2RAD) + (_img_h / 2);
+							x2 = _img_w - 0;
+							y2 = ((double)(r - (_accu_h / 2)) - ((x2 - (_img_w / 2)) * cos(t * DEG2RAD))) / sin(t * DEG2RAD) + (_img_h / 2);
+						}
+						else
+						{
+							//x = (r - y sin(t)) / cos(t);
+							y1 = 0;
+							x1 = ((double)(r - (_accu_h / 2)) - ((y1 - (_img_h / 2)) * sin(t * DEG2RAD))) / cos(t * DEG2RAD) + (_img_w / 2);
+							y2 = _img_h - 0;
+							x2 = ((double)(r - (_accu_h / 2)) - ((y2 - (_img_h / 2)) * sin(t * DEG2RAD))) / cos(t * DEG2RAD) + (_img_w / 2);
+						}
 
-					lines.push_back(std::pair< std::pair<int, int>, std::pair<int, int> >(std::pair<int, int>(x1, y1), std::pair<int, int>(x2, y2)));
+						lines.push_back(std::pair< std::pair<int, int>, std::pair<int, int> >(std::pair<int, int>(x1, y1), std::pair<int, int>(x2, y2)));
 
 				}
 			}
